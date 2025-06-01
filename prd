@@ -1,0 +1,340 @@
+WHOOP AI Coach Demo - Product Requirements Document & Implementation Backlog
+
+# Introduction/Overview
+Feature Name: WHOOP AI Coach Demo - Conversational Health Assistant
+
+Problem Statement: 83% of WHOOP users report decision paralysis when interpreting their health data. Users receive rich biometric insights but struggle to translate this data into actionable daily decisions, leading to frustration and underutilization of their health tracking investment.
+
+Solution: A conversational AI interface that transforms complex WHOOP biometric data into personalized, actionable guidance through natural language interactions, specifically designed for busy executives who work out 4x/week but lack time to interpret their health metrics.
+
+# Goals
+## Primary Goals:
+
+Create a functional demo showcasing AI-driven health guidance using synthetic WHOOP user data
+Integrate OpenAI API with a conversational interface for real-time health insights
+Deploy a publicly accessible demo that demonstrates the value proposition
+Build a clean, maintainable codebase suitable for portfolio presentation
+Learning Objectives:
+
+Master system prompt engineering for domain-specific AI applications
+Implement LLM API integration with contextual user data
+Create realistic synthetic health data that mimics WHOOP metrics
+Deploy a full-stack AI application to production
+
+# User Stories
+
+## Primary User Persona: "Executive Alex"
+Age: 35, Tech Executive
+Fitness: Works out 4x/week, moderate intensity
+Pain Points: Limited time to analyze health data, wants quick actionable insights
+Goals: Optimize performance, improve sleep, maintain consistency
+Core User Stories
+
+### US1: Daily Guidance
+
+As Executive Alex,
+I want to ask "Should I work out today?" and get a personalized recommendation based on my current recovery metrics,
+So that I can make informed decisions without spending time analyzing complex dashboards.
+
+### US2: Symptom Analysis
+
+As Executive Alex,
+I want to ask "Why am I tired today?" and understand the connection between my recent metrics and current state,
+So that I can identify patterns and adjust my behavior accordingly.
+
+### US3: Sleep Optimization
+
+As Executive Alex,
+I want to ask "How can I improve my sleep?" and receive personalized recommendations based on my sleep patterns,
+So that I can implement specific changes rather than generic advice.
+
+### US4: Trend Understanding
+
+As Executive Alex,
+I want to explore my historical data through conversation (e.g., "How has my HRV changed this month?"),
+So that I can understand long-term patterns and their implications.
+
+### US5: Contextual Data Interpretation
+
+As Executive Alex,
+I want to understand what my current metrics mean in context (e.g., "Is an HRV of 42 good for me?"),
+So that I can benchmark my performance against my personal baselines.
+
+### 4. Functional Requirements
+F1: Synthetic User Data System
+F1.1 System must generate realistic WHOOP user data for Executive Alex persona including:
+
+90 days of daily metrics (HRV, RHR, Sleep, Recovery, Strain)
+Weekly workout patterns (4x/week schedule with variations)
+Realistic correlations between metrics (e.g., high strain days affecting next-day recovery)
+Seasonal and lifestyle variations (work stress periods, travel, etc.)
+
+F1.2 Data must include personal baselines and trends:
+
+Individual HRV baseline (e.g., 45-55 range)
+Sleep duration patterns (6.5-8 hours with consistency issues)
+Recovery patterns showing workout impact
+
+F2: Conversational AI Interface
+
+F2.1 System must provide a chat interface that accepts natural language queries about health data
+
+F2.2 System must integrate with OpenAI API using engineered system prompts that include:
+
+## WHOOP domain expertise
+User's personal data context
+Behavior change coaching principles
+Executive-friendly communication style
+
+F2.3 AI responses must be:
+
+Personalized using specific user data points
+Actionable with clear next steps
+Educational, explaining the "why" behind recommendations
+Concise (under 150 words initially, expandable on request)
+F3: Core Query Handling
+F3.1 System must handle the three primary question types:
+
+Workout readiness assessment ("Should I work out today?")
+Symptom analysis ("Why am I tired today?")
+Sleep optimization guidance ("How can I improve my sleep?")
+F3.2 System must provide historical trend analysis:
+
+Weekly/monthly pattern recognition
+Correlation identification between behaviors and outcomes
+Progress tracking over time
+F4: Data Contextualization
+F4.1 System must interpret current metrics against personal baselines
+
+Compare today's HRV to user's 30-day average
+Assess recovery relative to typical post-workout patterns
+Evaluate sleep quality against user's consistency goals
+F4.2 System must provide progressive disclosure:
+
+Start with simple, actionable guidance
+Offer detailed explanations when requested
+Surface relevant data points to support recommendations
+
+F5: Technical Implementation
+F5.1 Frontend must be responsive and mobile-optimized F5.2 Backend must securely handle OpenAI API integration F5.3 Application must be deployable to production (Vercel/Netlify) F5.4 Code must be organized in a clean, maintainable structure for GitHub portfolio
+
+# Non-Goals (Out of Scope)
+Real WHOOP device integration - Using synthetic data only
+User authentication/accounts - Single demo user experience
+Data persistence - Session-based interactions only
+Multi-user support - Focused on single persona
+Advanced visualizations - Text-based insights primarily
+Mobile app development - Web-based interface only but should be responsive
+Payment/subscription features - Demo purposes only
+
+## Technical Considerations
+Architecture
+Frontend: React/Next.js with TypeScript for type safety
+Styling: Tailwind CSS for rapid development
+API Integration: OpenAI GPT-4 for conversational responses
+Deployment: Vercel for seamless GitHub integration
+Data Storage: Static JSON files (no database required for demo)
+
+System Prompt Engineering
+
+Must include:
+
+WHOOP domain knowledge (sleep science, HRV interpretation, recovery metrics)
+User context injection (current metrics, historical patterns, goals)
+Response formatting guidelines (tone, length, structure)
+Behavior change psychology principles
+Performance Requirements
+API response time: <3 seconds
+Mobile compatibility: iOS Safari, Android Chrome
+Deployment: Auto-deploy from GitHub main branch
+
+# Success Metrics
+## Demo Effectiveness
+Conversation Quality: AI provides relevant, personalized responses to all primary query types
+Data Integration: Responses reference specific user metrics and demonstrate understanding of context
+User Experience: Smooth chat interface with quick response times
+
+## Technical Success
+Deployment: Successfully deployed and publicly accessible
+Code Quality: Clean, documented codebase suitable for portfolio
+API Integration: Stable OpenAI integration with proper error handling
+
+## Learning Objectives
+System Prompt Mastery: Effective prompt engineering demonstrated through quality responses
+Full-Stack Implementation: Complete application from data generation to production deployment
+8. Open Questions
+Should we include workout recommendations beyond just yes/no guidance? Yes
+How detailed should the sleep analysis be (sleep stages, timing recommendations)? Yes
+Should the AI proactively offer insights or only respond to queries? Proactively offer insights
+
+What's the optimal balance between WHOOP-specific terminology and accessibility? Should feel a real Whoop feature
+
+#IMPLEMENTATION BACKLOG
+Sprint: 6-Hour MVP Implementation
+Epic 1: Foundation & Data (2 hours)
+Story 1.1: Development Environment Setup
+Tasks:
+
+ T1.1.1: Initialize Next.js project with TypeScript
+Create project structure
+Configure Tailwind CSS
+Set up environment variables for OpenAI API
+ T1.1.2: Set up GitHub repository
+Initialize git repository
+Create README with project description
+Set up basic folder structure
+ T1.1.3: Configure deployment pipeline
+Connect to Vercel
+Set up auto-deployment from main branch
+Configure environment variables in production
+Story 1.2: Synthetic User Data Generation
+Tasks:
+
+ T1.2.1: Create Executive Alex user profile
+Define persona characteristics (age, goals, lifestyle)
+Set personal baselines (HRV: 48±7, RHR: 52±4, Sleep: 7.2±1.2h)
+Document workout schedule (Mon/Tue/Thu/Sat pattern)
+ T1.2.2: Generate 90 days of realistic daily metrics
+Create HRV data with realistic variability and trends
+Generate correlated sleep data (duration, efficiency, stages)
+Add recovery scores based on strain/sleep relationship
+Include strain data reflecting 4x/week workout pattern
+ T1.2.3: Add lifestyle context and variations
+Include work stress periods (lower HRV, shorter sleep)
+Add travel days (disrupted sleep patterns)
+Create seasonal variations and trends
+ T1.2.4: Create data access utilities
+Build functions to query recent metrics
+Create trend analysis utilities (7-day, 30-day averages)
+Implement data contextualization helpers
+Epic 2: AI Integration & Core Logic (2 hours)
+Story 2.1: System Prompt Engineering
+Tasks:
+
+ T2.1.1: Create base system prompt template
+Define AI persona as WHOOP health coach
+Establish communication style (executive-friendly, action-oriented)
+Set response format guidelines (length, structure, tone)
+ T2.1.2: Build dynamic context injection
+Create user data summarization for prompt context
+Add current metrics and recent trends
+Include relevant historical patterns
+ T2.1.3: Define response templates for core queries
+"Should I work out?" - decision framework
+"Why am I tired?" - symptom analysis structure
+"How can I improve sleep?" - recommendation format
+ T2.1.4: Add progressive disclosure capabilities
+Brief initial responses with expansion options
+Detailed follow-up explanations
+Data point references and explanations
+Story 2.2: OpenAI API Integration
+Tasks:
+
+ T2.2.1: Set up OpenAI client configuration
+Configure API client with proper error handling
+Set model parameters (GPT-4, temperature, max tokens)
+Implement retry logic for reliability
+ T2.2.2: Build query processing pipeline
+Create user message preprocessing
+Implement context injection into system prompt
+Handle API response processing and formatting
+ T2.2.3: Create conversation memory management
+Maintain chat history for context
+Implement conversation state management
+Add conversation reset functionality
+ T2.2.4: Add error handling and fallbacks
+Handle API failures gracefully
+Provide informative error messages
+Implement basic fallback responses
+Epic 3: User Interface Development (1.5 hours)
+Story 3.1: Chat Interface Components
+Tasks:
+
+ T3.1.1: Create chat container and message components
+Build message display components (user/AI messages)
+Implement auto-scrolling chat history
+Add typing indicators and loading states
+ T3.1.2: Build input interface
+Create message input field with send button
+Add quick action buttons for common queries
+Implement keyboard shortcuts (Enter to send)
+ T3.1.3: Add mobile-responsive design
+Optimize layout for mobile devices
+Ensure touch-friendly interface elements
+Test on various screen sizes
+ T3.1.4: Implement WHOOP-inspired styling
+Apply WHOOP color scheme (black/green/white)
+Use appropriate typography and spacing
+Add subtle animations and transitions
+Story 3.2: User Context Display
+Tasks:
+
+ T3.2.1: Create user profile header
+Display Executive Alex persona information
+Show current key metrics (HRV, Recovery, Sleep)
+Add visual status indicators
+ T3.2.2: Build quick metrics dashboard
+Display today's key numbers
+Show trend indicators (↑↓→)
+Add contextual color coding (red/yellow/green)
+ T3.2.3: Create conversation starters
+Add suggested questions as buttons
+Implement quick query functionality
+Include contextual suggestions based on current metrics
+Epic 4: Testing & Deployment (0.5 hours)
+Story 4.1: Quality Assurance
+Tasks:
+
+ T4.1.1: Test core conversation flows
+Verify all three primary query types work correctly
+Test follow-up questions and conversation continuity
+Validate response quality and relevance
+ T4.1.2: Cross-browser and device testing
+Test on desktop browsers (Chrome, Firefox, Safari)
+Verify mobile functionality (iOS/Android)
+Check responsive design breakpoints
+ T4.1.3: Performance and reliability testing
+Verify API response times
+Test error handling scenarios
+Check deployment stability
+Story 4.2: Production Deployment
+Tasks:
+
+ T4.2.1: Final code review and cleanup
+Review code quality and organization
+Add inline documentation
+Clean up unused imports and dead code
+ T4.2.2: Deploy to production
+Push final changes to GitHub
+Verify automatic deployment to Vercel
+Test production environment functionality
+ T4.2.3: Create demo documentation
+Write project README with demo instructions
+Document key features and technical decisions
+Prepare presentation talking points
+Definition of Done
+For Each Story:
+ Code is written and tested
+ Functionality works on mobile and desktop
+ Changes are committed to GitHub
+ No console errors or warnings
+ Meets acceptance criteria defined in user stories
+For Overall Project:
+ All primary user stories are implemented
+ Demo is deployed and publicly accessible
+ AI provides relevant, personalized responses
+ Code is clean and well-organized for portfolio
+ README documentation is complete
+ Project successfully demonstrates WHOOP AI Coach concept
+Risk Mitigation
+High Priority Risks:
+
+OpenAI API reliability - Implement error handling and fallback responses
+Response quality - Extensive prompt engineering and testing with synthetic data
+Mobile performance - Progressive loading and optimized assets
+Time constraints - Prioritize core functionality over polish features
+Medium Priority Risks:
+
+Data realism - Validate synthetic data against known WHOOP patterns
+User experience - Focus on core chat functionality over advanced UI features
+Deployment issues - Test deployment early in development process
