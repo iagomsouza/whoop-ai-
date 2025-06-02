@@ -136,7 +136,14 @@ router.post('/api/chat', async (req: Request, res: Response) => {
     const currentMetrics = loadCurrentMetrics();
     const recentTrends = loadRecentTrends();
     const personaProfile = loadPersonaProfile();
-    const currentDate = new Date().toISOString().split('T')[0]; // For {{date}} if AI uses it from context
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-CA', { // 'en-CA' locale often gives YYYY-MM-DD format
+      timeZone: 'America/Los_Angeles',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const currentDate = formatter.format(now); // This will be YYYY-MM-DD for 'America/Los_Angeles' in 'en-CA' locale
 
     let contextForAI = `Today's Date: ${currentDate}\n\n`;
 
