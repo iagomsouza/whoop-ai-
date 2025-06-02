@@ -102,6 +102,14 @@ function loadRecentTrends(): string {
 
 const router = express.Router();
 
+// Helper function to format decimal hours to Xh Ym string
+const formatSleepDecimalToHoursMinutes = (decimalHours: number): string => {
+  if (isNaN(decimalHours) || decimalHours < 0) return 'N/A';
+  const hours = Math.floor(decimalHours);
+  const minutes = Math.round((decimalHours - hours) * 60);
+  return `${hours}h ${minutes}m`;
+};
+
 // Function to load persona profile
 function loadPersonaProfile(): PersonaProfile | null {
   try {
@@ -117,8 +125,8 @@ function loadPersonaProfile(): PersonaProfile | null {
   }
 }
 
-router.post('/api/chat', async (req: Request, res: Response) => {
-  console.log('[CHAT_FN] POST /api/chat received.');
+router.post('/chat', async (req: Request, res: Response) => {
+  console.log('[CHAT_FN] POST /chat received.');
   const userMessageText = req.body.message;
 
   if (!userMessageText) {
@@ -188,8 +196,8 @@ router.post('/api/chat', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/api/health', (req: Request, res: Response) => {
-  console.log('[CHAT_FN] GET /api/health received.');
+router.get('/health', (req: Request, res: Response) => {
+  console.log('[CHAT_FN] GET /health received.');
   res.status(200).json({ 
     status: 'OK',
     message: 'WHOOP AI Coach API is healthy.',
@@ -197,6 +205,70 @@ router.get('/api/health', (req: Request, res: Response) => {
     openAIKeyConfigured: !!process.env.OPENAI_API_KEY 
   });
   console.log('[CHAT_FN] Responded to GET /api/health.');
+});
+
+// Endpoint to get profile data for the UI header
+router.get('/profile-data', (req, res) => {
+  try {
+    const personaProfile = loadPersonaProfile();
+    const currentMetrics = loadCurrentMetrics();
+
+    if (!personaProfile || !currentMetrics) {
+      return res.status(404).json({ error: 'Profile or metrics data not found.' });
+    }
+
+    // Determine HRV status
+    let hrvStatus: 'good' | 'neutral' | 'poor' = 'neutral';
+    if (personaProfile.baselines?.hrv_avg_ms && currentMetrics.hrv_ms) {
+      if (currentMetrics.hrv_ms > personaProfile.baselines.hrv_avg_ms * 1.1) hrvStatus = 'good';
+      else if (currentMetrics.hrv_ms < personaProfile.baselines.hrv_avg_ms * 0.9) hrvStatus = 'poor';
+    }
+
+    // Determine Recovery status
+    let recoveryStatus: 'good' | 'neutral' | 'poor' = 'neutral';
+    if (personaProfile.baselines?.recovery_avg_percent && currentMetrics.recovery_score_percent) {
+      if (currentMetrics.recovery_score_percent > personaProfile.baselines.recovery_avg_percent + 5) recoveryStatus = 'good';
+      else if (currentMetrics.recovery_score_percent < personaProfile.baselines.recovery_avg_percent - 10) recoveryStatus = 'poor';
+    }
+
+    // Determine Sleep status
+    let sleepStatus: 'good' | 'neutral' | 'poor' = 'neutral';
+    if (personaProfile.baselines?.sleep_avg_hours && currentMetrics.sleep_duration_hours) {
+      if (currentMetrics.sleep_duration_hours > personaProfile.baselines.sleep_avg_hours + 0.5) sleepStatus = 'good';
+      else if (currentMetrics.sleep_duration_hours < personaProfile.baselines.sleep_avg_hours - 1.0) sleepStatus = 'poor';
+    }
+
+        const nameParts = personaProfile.userName ? personaProfile.userName.split(' ') : ['User'];
+    const initials = nameParts.map(part => part[0]).join('').substring(0, 2).toUpperCase();
+
+    const profileData = {
+      personaName: personaProfile.userName ? personaProfile.userName.split(' ')[0] : 'User', // Get first name e.g. "Alex"
+      personaRole: 'Busy Professional', // Using a fixed role as per original UI design
+      avatarInitials: initials || 'U',
+      metrics: {
+        hrv: {
+          value: currentMetrics.hrv_ms ? `${currentMetrics.hrv_ms} ms` : 'N/A',
+          status: hrvStatus,
+          trend: 'down' as const, // Placeholder trend
+        },
+        recovery: {
+          value: currentMetrics.recovery_score_percent ? `${currentMetrics.recovery_score_percent}%` : 'N/A',
+          status: recoveryStatus,
+          trend: 'up' as const, // Placeholder trend
+        },
+        sleep: {
+          value: formatSleepDecimalToHoursMinutes(currentMetrics.sleep_duration_hours),
+          status: sleepStatus,
+          trend: 'flat' as const, // Placeholder trend
+        },
+      },
+    };
+
+    res.json(profileData);
+  } catch (error: any) {
+    console.error('Error fetching profile data for UI:', error);
+    res.status(500).json({ error: 'Failed to load profile data.', details: error.message });
+  }
 });
 
 app.use('/', router); // Mount the router at the root to handle /api/chat and /api/health

@@ -58,6 +58,11 @@ const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isAiTyping, setIsAiTyping] = useState<boolean>(false);
+  const [profileName, setProfileName] = useState<string>('User');
+  const [profileRole, setProfileRole] = useState<string>('Loading...');
+  const [avatarInitials, setAvatarInitials] = useState<string>('U');
+  const [keyMetrics, setKeyMetrics] = useState<KeyMetrics>({});
+  const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(true);
   const messagesEndRef = useRef<null | HTMLDivElement>(null); // For auto-scrolling
 
   // Function to scroll to the bottom of the messages list
@@ -67,6 +72,36 @@ const ChatInterface: React.FC = () => {
 
   // Scroll to bottom whenever messages change
   useEffect(scrollToBottom, [messages]);
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      setIsLoadingProfile(true);
+      try {
+        const response = await fetch('/api/profile-data');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
+          throw new Error(errorData.error || `HTTP error! status: ${response.status} - ${errorData.message || 'Unknown error'}`);
+        }
+        const fetchedData = await response.json();
+
+        setProfileName(fetchedData.personaName || 'User');
+        setProfileRole(fetchedData.personaRole || 'Profile');
+        setAvatarInitials(fetchedData.avatarInitials || 'U');
+        setKeyMetrics(fetchedData.metrics || {});
+
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+        setProfileName('Error');
+        setProfileRole('Could not load profile');
+        // Potentially set default/empty metrics
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    fetchProfileData();
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleSendMessage = async (messageText?: string) => {
     const textToSend = typeof messageText === 'string' ? messageText : inputValue.trim();
@@ -139,19 +174,15 @@ const ChatInterface: React.FC = () => {
     handleSendMessage(query);
   };
 
-  const executiveAlexMetrics: KeyMetrics = {
-    hrv: { value: '68 ms', status: 'neutral', trend: 'down' },
-    recovery: { value: '75%', status: 'good', trend: 'up' },
-    sleep: { value: '7h 15m', status: 'good', trend: 'flat' },
-  };
+  
 
-  const dynamicGeneratedStarters = getDynamicStarters(executiveAlexMetrics);
+  const dynamicGeneratedStarters = getDynamicStarters(keyMetrics);
   const currentStarters = Array.from(new Set([...dynamicGeneratedStarters, ...staticStarters])).slice(0, 4);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 40px)', maxWidth: '800px', margin: '20px auto', border: '1px solid #404040', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', overflow: 'hidden', backgroundColor: '#1F1F1F' }}>
-      <UserProfileHeader personaName="Alex, welcome to Whoop Coach" personaRole="Busy Professional" avatarInitials="EA" metrics={executiveAlexMetrics} />
-      <MetricsDashboard metrics={executiveAlexMetrics} />
+      <UserProfileHeader personaName={isLoadingProfile ? 'Loading...' : `${profileName}, welcome to Whoop Coach`} personaRole={profileRole} avatarInitials={avatarInitials} metrics={keyMetrics} />
+      <MetricsDashboard metrics={keyMetrics} />
 
       {/* Messages Area */}
       <div style={{ flexGrow: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column' }}>
