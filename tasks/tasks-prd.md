@@ -129,6 +129,7 @@
   - [x] 4.1.7 Handle the response from OpenAI: extract the assistant's message content.
   - [x] 4.1.8 Send the assistant's message back to the frontend as a JSON response.
   - [x] 4.1.9 Implement basic error handling for OpenAI API calls (e.g., log errors, return appropriate HTTP status codes).
+  - [x] 4.1.10 Enhance backend to load and include user data (e.g., last 14 days) and system prompt in API calls to OpenAI.
 
 - [x] 4.2 Integrate Basic Security Measures
   - [x] 4.2.1 Ensure `OPENAI_API_KEY` is loaded via `dotenv` for local development and is configured as a proper environment variable for deployment.
