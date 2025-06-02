@@ -20,14 +20,14 @@ console.log('[CHAT_TS_LOG_005] Express JSON middleware applied.');
 const router = express.Router();
 console.log('[CHAT_TS_LOG_006] Express router initialized.');
 
-// This will handle requests to /api/ (or /api/chat if :splat captures 'chat')
-router.post('/', (req: Request, res: Response) => {
-  console.log('[CHAT_TS_LOG_007] POST / (invoked via /api/...) handler reached.');
+// This will handle requests to /api/chat (if :splat captures 'chat')
+router.post('/chat', (req: Request, res: Response) => {
+  console.log('[CHAT_TS_LOG_007_MODIFIED] POST request to /chat received.');
   console.log('[CHAT_TS_LOG_008] Request body:', JSON.stringify(req.body || {}));
   res.status(200).json({ 
     reply: 'Ultra-simplified Netlify function says hi! This is a POST response.' 
   });
-  console.log('[CHAT_TS_LOG_009] POST / response sent.');
+  console.log('[CHAT_TS_LOG_009] POST /chat response sent.');
 });
 
 // This will handle requests to /api/health (if :splat captures 'health')
