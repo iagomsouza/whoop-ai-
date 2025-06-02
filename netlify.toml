@@ -1,0 +1,26 @@
+# Netlify configuration file
+
+[build]
+  # This is the directory where your serverless functions are located.
+  # Netlify will automatically detect and build functions from this directory.
+  functions = "netlify/functions/"
+
+  # If your frontend is built by Netlify (which it is), 
+  # the publish directory is usually 'dist' for Vite projects.
+  # This should already be configured in your Netlify site settings from the UI.
+  # publish = "dist"
+
+# Redirects and rewrites can be powerful for routing.
+# We want requests to /api/* on your Netlify site to go to our 'chat' function.
+# The :splat means it will capture the rest of the path.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/chat/:splat"
+  status = 200 # Use 200 for a rewrite (acts like a proxy)
+
+# You can also specify build settings for functions if needed, 
+# for example, if you need a specific Node.js version for functions.
+# [functions]
+#   node_bundler = "esbuild"
+#   [functions."*"]
+#     node_version = "18"
