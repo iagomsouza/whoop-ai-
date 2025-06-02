@@ -34,9 +34,18 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: { error: 'Too many requests, please try again later.' },
   // Netlify uses the 'x-nf-client-connection-ip' header for the client's IP
-  keyGenerator: (req: Request) => {
-    const ip = req.headers['x-nf-client-connection-ip'] || req.ip;
-    return Array.isArray(ip) ? ip[0] : ip;
+  keyGenerator: (req: Request): string => { // Ensure a string is returned
+    const ipHeader = req.headers['x-nf-client-connection-ip'];
+    let clientIp: string | undefined;
+
+    if (Array.isArray(ipHeader)) {
+      clientIp = ipHeader[0];
+    } else {
+      clientIp = ipHeader;
+    }
+    // Provide a fallback key if IP is not found, to satisfy type and prevent errors.
+    // For robust rate limiting, you might want to investigate further if IPs are often missing.
+    return clientIp || req.ip || 'default-rate-limit-key';
   },
 });
 
