@@ -10,11 +10,7 @@ console.log('[CHAT_TS_LOG_002] Imports completed.');
 
 const app = express();
 
-// Middleware to log incoming request path details
-app.use((req, res, next) => {
-  console.log(`[CHAT_TS_LOG_REQ_DETAILS] Path: ${req.path}, OriginalURL: ${req.originalUrl}, BaseURL: ${req.baseUrl}, Method: ${req.method}`);
-  next();
-});
+// Path details logging removed, issue understood.
 console.log('[CHAT_TS_LOG_003] Express app initialized.');
 
 app.use(cors());
@@ -27,24 +23,21 @@ const router = express.Router();
 console.log('[CHAT_TS_LOG_006] Express router initialized.');
 
 // This will handle requests to /api/chat (if :splat captures 'chat')
-router.post('/*', (req: Request, res: Response) => { // Catch any POST under the router's mount point
-  console.log(`[CHAT_TS_LOG_007_DEBUG] POST request to general path '${req.path}' received (original splat was expected to be 'chat').`);
+router.post('/api/chat', (req: Request, res: Response) => {
+  console.log('[CHAT_TS_LOG_007_FINAL_ROUTE_TEST] POST /api/chat received.');
   console.log('[CHAT_TS_LOG_008] Request body:', JSON.stringify(req.body || {}));
   res.status(200).json({ 
-    reply: `Ultra-simplified Netlify function says hi! POST to '${req.path}' handled.`,
-    actualPath: req.path,
-    originalUrl: req.originalUrl,
-    baseUrl: req.baseUrl,
-    bodyReceived: req.body 
+    reply: 'Simplified function: /api/chat POST request handled.',
+    receivedBody: req.body 
   });
-  console.log(`[CHAT_TS_LOG_009_DEBUG] Responding to POST ${req.path}`);
+  console.log('[CHAT_TS_LOG_009_FINAL_ROUTE_TEST] Responding to POST /api/chat.');
 });
 
 // This will handle requests to /api/health (if :splat captures 'health')
-router.get('/health', (req: Request, res: Response) => {
-  console.log('[CHAT_TS_LOG_010] GET /health (invoked via /api/health) handler reached.');
-  res.status(200).json({ status: 'Ultra-simplified health check OK' });
-  console.log('[CHAT_TS_LOG_011] GET /health response sent.');
+router.get('/api/health', (req: Request, res: Response) => {
+  console.log('[CHAT_TS_LOG_010_FINAL_ROUTE_TEST] GET /api/health received.');
+  res.status(200).json({ status: 'Simplified health check OK from /api/health' });
+  console.log('[CHAT_TS_LOG_011_FINAL_ROUTE_TEST] Responding to GET /api/health.');
 });
 
 // Mount the router at the base path.
