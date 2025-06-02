@@ -1,3 +1,4 @@
+console.log('Netlify Function chat.ts: VERY TOP LEVEL LOG - DEBUGGING');
 import express, { Request, Response } from 'express';
 import OpenAI from 'openai';
 import cors from 'cors';
