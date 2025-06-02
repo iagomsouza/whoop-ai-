@@ -152,7 +152,13 @@
   - [x] 4.4.3 Document how to run the application locally (both frontend and backend) in the README.
   - [x] 4.4.4 Configure build scripts for the backend (e.g., `npm run server:build`) and frontend (e.g., `npm run build`).
   - [x] 4.4.5 Ensure the `OPENAI_API_KEY` environment variable is correctly set in the chosen deployment environment for the backend. (Noted for deployment)
-  - [ ] 4.4.6 Deploy the frontend (e.g., static site from `dist` folder) and backend (e.g., Node.js server from `dist-server` folder).
+  - [x] 4.4.6 Deploy the application to Netlify (frontend and backend function).
+  - [x] 4.4.6.1 Push initial frontend code to GitHub for Netlify deployment.
+  - [x] 4.4.6.2 Deploy frontend static site to Netlify.
+  - [x] 4.4.6.3 Configure backend API as a Netlify Serverless Function.
+  - [x] 4.4.6.4 Push Netlify Function configuration (`netlify.toml`, function code) to GitHub.
+  - [x] 4.4.6.5 Set `OPENAI_API_KEY` environment variable in Netlify site settings.
+  - [x] 4.4.6.6 Verify backend function deployment and end-to-end functionality on Netlify.
   - [ ] 4.4.7 Conduct end-to-end testing on the deployed application.
   - [x] 4.4.8 Test rate limiting by sending multiple requests quickly (on deployed or local setup).
   - [x] 4.4.9 Verify error handling for both API errors and rate limit errors (on deployed or local setup).
