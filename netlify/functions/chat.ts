@@ -1,17 +1,24 @@
-// ULTRA-SIMPLIFIED chat.ts for Netlify logging debug
-
-console.log('[CHAT_TS_LOG_001] Script execution started.');
+console.log('[CHAT_TS_INIT_001] chat.ts: Top of file execution started.');
 
 import express, { Request, Response } from 'express';
 import serverlessHttp from 'serverless-http';
+
+
 import cors from 'cors';
 import OpenAI from 'openai';
+
+
 import fs from 'fs';
 import path from 'path';
+console.log('[CHAT_TS_INIT_002] chat.ts: All static imports completed.');
 
-console.log('[CHAT_FN] Netlify Function chat.ts starting...');
+
+
+
 
 const app = express();
+console.log('[CHAT_TS_INIT_003] chat.ts: Express app created.');
+
 
 // Setup OpenAI Client
 const openai = new OpenAI({
@@ -21,6 +28,8 @@ const openai = new OpenAI({
 // CORS and JSON middleware
 app.use(cors());
 app.use(express.json());
+console.log('[CHAT_TS_INIT_004] chat.ts: Core app middleware (cors, express.json) applied.');
+
 
 // Function to load system prompt
 function loadSystemPrompt(): string {
@@ -78,8 +87,8 @@ function loadCurrentMetrics(): WhoopMetric | null {
 // Function to load recent trends (last 14 days summary string)
 function loadRecentTrends(): string {
   try {
-    const dataPath = path.join(__dirname, 'data', 'synthetic_user_data.json');
-    console.log(`[CHAT_FN] Attempting to load user data from: ${dataPath}`);
+    const dataPath = path.join(__dirname, '../data', 'synthetic_user_data.json');
+    console.log(`[CHAT_FN] Attempting to load user data for trends from: ${dataPath}`);
     const rawData = fs.readFileSync(dataPath, 'utf-8');
     const jsonData = JSON.parse(rawData) as WhoopMetric[];
     console.log('[CHAT_FN] User data loaded and parsed successfully.');
@@ -101,6 +110,8 @@ function loadRecentTrends(): string {
 }
 
 const router = express.Router();
+console.log('[CHAT_TS_INIT_005] chat.ts: Express router created.');
+
 
 // Helper function to format decimal hours to Xh Ym string
 const formatSleepDecimalToHoursMinutes = (decimalHours: number): string => {
@@ -272,7 +283,11 @@ router.get('/profile-data', (req, res) => {
   }
 });
 
-app.use('/', router); // Mount the router at the root to handle /api/chat and /api/health
+app.use('/', router);
+console.log('[CHAT_TS_INIT_006] chat.ts: Router mounted on app at "/".');
+ // Mount the router at the root to handle /api/chat and /api/health
 
 export const handler = serverlessHttp(app);
-console.log('[CHAT_FN] Netlify Function chat.ts initialized and handler exported.');
+console.log('[CHAT_TS_INIT_007] chat.ts: serverless(app) handler exported.');
+
+
