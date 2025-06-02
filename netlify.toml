@@ -20,7 +20,11 @@
 
 # You can also specify build settings for functions if needed, 
 # for example, if you need a specific Node.js version for functions.
-# [functions]
+[functions]
+  # Ensure that non-code files needed by functions are included.
+  # Paths are relative to the root of your repository or the base directory if specified.
+  # Here, we want to include the 'data' and 'prompts' subdirectories located *inside* the 'netlify/functions' directory.
+  included_files = ["netlify/functions/data/**", "netlify/functions/prompts/**"]
 #   node_bundler = "esbuild"
 #   [functions."*"]
 #     node_version = "18"
