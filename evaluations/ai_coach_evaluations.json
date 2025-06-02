@@ -1,0 +1,15 @@
+{
+  "evaluation_suite_name": "Whoop AI Coach Evaluation Dataset",
+  "version": "1.0.0",
+  "creation_date": "2025-06-02",
+  "description": "A comprehensive set of prompts and ideal responses for evaluating the Whoop AI Coach, categorized by difficulty and aligned with system prompt guidelines.",
+  "evaluation_framework_summary": {
+    "objective": "Systematically test and improve AI performance across common, medium, and edge-case user queries related to health data within Whoop’s scope.",
+    "persona_profile_used": "Varied by case (e.g., Executive Alex, or as specified in persona_context_snapshot)",
+    "system_prompt_version": "1.0 (referencing netlify/functions/prompts/system_prompt_whoop_coach.md)",
+    "scoring_rubric_overview": "Human evaluators score AI responses on: Intent Recognition, Response Relevance, Tone Appropriateness, Completeness, Accuracy, and Overall Rating (1-5 scale)."
+  },
+  "evaluation_cases": [
+  
+  ]
+}
