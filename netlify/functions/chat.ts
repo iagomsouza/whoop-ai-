@@ -30,6 +30,11 @@ app.use(cors());
 app.use(express.json());
 console.log('[CHAT_TS_INIT_004] chat.ts: Core app middleware (cors, express.json) applied.');
 
+app.use((req, res, next) => {
+  console.log(`[CHAT_TS_MIDDLEWARE] Incoming request: Method=${req.method}, Path=${req.path}, OriginalURL=${req.originalUrl}`);
+  next();
+});
+
 
 // Function to load system prompt
 function loadSystemPrompt(): string {
