@@ -17,6 +17,7 @@
   from = "/api/*"
   to = "/.netlify/functions/chat/:splat"
   status = 200 # Use 200 for a rewrite (acts like a proxy)
+  force = true
 
 # You can also specify build settings for functions if needed, 
 # for example, if you need a specific Node.js version for functions.
