@@ -209,6 +209,7 @@ router.get('/health', (req: Request, res: Response) => {
 
 // Endpoint to get profile data for the UI header
 router.get('/profile-data', (req, res) => {
+  console.log(`[CHAT_FN] GET /profile-data invoked. Path: ${req.path}, OriginalURL: ${req.originalUrl}`);
   try {
     const personaProfile = loadPersonaProfile();
     const currentMetrics = loadCurrentMetrics();
