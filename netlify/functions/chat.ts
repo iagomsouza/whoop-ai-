@@ -4,10 +4,48 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import serverless from 'serverless-http';
+import fs from 'fs';
+import path from 'path';
 
 // Load environment variables from .env file
 // For Netlify deployment, environment variables should be set in the Netlify UI.
 // dotenv.config({ path: '../../.env' }); // This line is mainly for local testing if you use netlify dev
+
+// Define WhoopDay interface for type safety with user data
+interface WhoopDay {
+  date: string;
+  hrv: number;
+  rhr: number;
+  sleep_duration_hours: number;
+  sleep_efficiency_percent: number;
+  sleep_rem_hours: number;
+  sleep_deep_hours: number;
+  sleep_light_hours: number;
+  strain_score: number;
+  recovery_score_percent: number;
+}
+
+let systemPrompt = 'You are a helpful AI assistant. System prompt failed to load.'; // Default fallback
+try {
+  // Paths are relative to the function file's location after deployment
+  const promptPath = path.join(__dirname, 'prompts/system_prompt_whoop_coach.md');
+  systemPrompt = fs.readFileSync(promptPath, 'utf-8');
+  console.log('System prompt loaded successfully from: ' + promptPath);
+} catch (error) {
+  console.error('Error loading system prompt from path: ' + path.join(__dirname, 'prompts/system_prompt_whoop_coach.md'), error);
+  // Depending on requirements, you might want to throw error or prevent server start
+}
+
+let allUserData: WhoopDay[] = [];
+try {
+  const dataPath = path.join(__dirname, 'data/synthetic_user_data.json');
+  const rawData = fs.readFileSync(dataPath, 'utf-8');
+  allUserData = JSON.parse(rawData);
+  console.log(`User data loaded successfully from: ${dataPath}. ${allUserData.length} records found.`);
+} catch (error) {
+  console.error('Error loading user data from path: ' + path.join(__dirname, 'data/synthetic_user_data.json'), error);
+  // Depending on requirements, you might want to throw error or use empty data
+}
 
 const app = express();
 
@@ -111,26 +149,57 @@ simpleRouter.post('/', limiter, async (req: Request, res: Response) => { // This
   if (!openai) {
     return res.status(500).json({ error: 'Server configuration error: OpenAI client not initialized.' });
   }
-  const { messages } = req.body;
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: 'Bad Request: No messages provided or messages is not an array.' });
+
+  const userChatMessages = req.body.messages; // Expects an array of message objects from client
+
+  if (!userChatMessages || !Array.isArray(userChatMessages) || userChatMessages.length === 0) {
+    return res.status(400).json({ error: 'Bad Request: No messages provided, or not in expected format.' });
   }
+
+  // Extract the actual user question (content of the last message)
+  const latestUserMessageContent = userChatMessages[userChatMessages.length - 1].content;
+
+  // Prepare recent data (e.g., last 14 days)
+  // Ensure allUserData is available; handle case where it might be empty if loading failed
+  const recentData = allUserData.length > 0 ? allUserData.slice(-14) : []; 
+  const formattedRecentData = recentData.map(day =>
+    `Date: ${day.date}, HRV: ${day.hrv}, RHR: ${day.rhr}, Sleep: ${day.sleep_duration_hours.toFixed(1)}h (${day.sleep_efficiency_percent.toFixed(1)}% eff), Recovery: ${day.recovery_score_percent}%, Strain: ${day.strain_score.toFixed(1)}`
+  ).join('\n');
+
+  const messagesForAPI: OpenAI.Chat.ChatCompletionMessageParam[] = [
+    { 
+      role: 'system', 
+      content: systemPrompt 
+    },
+    {
+      role: 'user',
+      // Combine recent data with the latest user question
+      content: `Here is my recent WHOOP data for the last ${recentData.length} days (if available):
+${formattedRecentData || 'No recent data available.'}
+
+My question is: ${latestUserMessageContent}`
+    }
+  ];
+
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: messages,
+      model: 'gpt-3.5-turbo', // Consider 'gpt-4' or other models if needed
+      messages: messagesForAPI,
     });
+
     if (completion.choices && completion.choices.length > 0 && completion.choices[0].message) {
       res.json({ reply: completion.choices[0].message.content });
     } else {
       res.status(500).json({ error: 'Failed to get a valid response from OpenAI.' });
     }
   } catch (error: any) {
-    console.error('Error calling OpenAI API:', error.message);
+    console.error('Error calling OpenAI API:', error.message, error.stack);
     if (error.response) {
-      res.status(error.response.status).json({ error: error.response.data || error.message });
+      console.error('OpenAI API Error Response Status:', error.response.status);
+      console.error('OpenAI API Error Response Data:', error.response.data);
+      res.status(error.response.status).json({ error: error.response.data?.error?.message || error.response.data || error.message });
     } else {
-      res.status(500).json({ error: 'An unexpected error occurred while processing your request.' });
+      res.status(500).json({ error: 'An unexpected error occurred while processing your request to OpenAI.' });
     }
   }
 });
