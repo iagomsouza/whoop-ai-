@@ -1,0 +1,26 @@
+{
+  "extends": "../tsconfig.json", // Extend from the root tsconfig
+  "compilerOptions": {
+    "noEmit": false, // We want to emit JS files for the server
+    "module": "CommonJS", // Or ESNext if your server package.json has "type": "module"
+    "moduleResolution": "node", // Classic Node.js module resolution
+    "outDir": "../dist-server", // Output directory for compiled JS
+    "rootDir": ".", // Root directory of source files (server folder)
+    "baseUrl": ".", // Base URL for module resolution within the server folder
+    "skipLibCheck": true,
+    "sourceMap": true, // Generate source maps for easier debugging
+    // Override or remove options not suitable for backend if any
+    "jsx": "react-jsx", // Keep or remove if no JSX in backend, though harmless
+    "lib": ["esnext"], // DOM library not needed for backend
+    "isolatedModules": false // Not strictly necessary for backend build
+  },
+  "include": [
+    "index.ts", // Include only the server entry point and its imports
+    "**/*.ts" // Include all .ts files in the server directory
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}
