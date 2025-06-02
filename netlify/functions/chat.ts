@@ -288,8 +288,8 @@ router.get('/profile-data', (req, res) => {
   }
 });
 
-app.use('/', router);
-console.log('[CHAT_TS_INIT_006] chat.ts: Router mounted on app at "/".');
+app.use('/api', router);
+console.log('[CHAT_TS_INIT_006] chat.ts: Router mounted on app at "/api".');
  // Mount the router at the root to handle /api/chat and /api/health
 
 export const handler = serverlessHttp(app);
