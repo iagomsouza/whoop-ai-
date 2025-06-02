@@ -53,7 +53,7 @@ function loadSystemPrompt(): string {
 // Interface for WHOOP daily metrics
 interface WhoopMetric {
   date: string; // YYYY-MM-DD
-  hrv_ms: number;
+  hrv: number;
   recovery_score_percent: number;
   resting_heart_rate_bpm: number;
   sleep_performance_percent: number;
@@ -104,7 +104,7 @@ function loadRecentTrends(): string {
 
     let formattedString = 'Last 14 days of WHOOP data:\n';
     recentData.forEach(day => {
-      formattedString += `Date: ${day.date}, HRV: ${day.hrv_ms}ms, Recovery: ${day.recovery_score_percent}%, RHR: ${day.resting_heart_rate_bpm}bpm, Sleep Perf: ${day.sleep_performance_percent}%, Sleep Dur: ${day.sleep_duration_hours}h\n`;
+      formattedString += `Date: ${day.date}, HRV: ${day.hrv}ms, Recovery: ${day.recovery_score_percent}%, RHR: ${day.resting_heart_rate_bpm}bpm, Sleep Perf: ${day.sleep_performance_percent}%, Sleep Dur: ${day.sleep_duration_hours}h\n`;
     });
     console.log('[CHAT_FN] Recent trends data formatted.');
     return formattedString;
@@ -236,9 +236,9 @@ router.get('/profile-data', (req, res) => {
 
     // Determine HRV status
     let hrvStatus: 'good' | 'neutral' | 'poor' = 'neutral';
-    if (personaProfile.baselines?.hrv_avg_ms && currentMetrics.hrv_ms) {
-      if (currentMetrics.hrv_ms > personaProfile.baselines.hrv_avg_ms * 1.1) hrvStatus = 'good';
-      else if (currentMetrics.hrv_ms < personaProfile.baselines.hrv_avg_ms * 0.9) hrvStatus = 'poor';
+    if (personaProfile.baselines?.hrv_avg_ms && currentMetrics.hrv) {
+      if (currentMetrics.hrv > personaProfile.baselines.hrv_avg_ms * 1.1) hrvStatus = 'good';
+      else if (currentMetrics.hrv < personaProfile.baselines.hrv_avg_ms * 0.9) hrvStatus = 'poor';
     }
 
     // Determine Recovery status
@@ -264,7 +264,7 @@ router.get('/profile-data', (req, res) => {
       avatarInitials: initials || 'U',
       metrics: {
         hrv: {
-          value: currentMetrics.hrv_ms ? `${currentMetrics.hrv_ms} ms` : 'N/A',
+          value: currentMetrics.hrv ? `${currentMetrics.hrv} ms` : 'N/A',
           status: hrvStatus,
           trend: 'down' as const, // Placeholder trend
         },
