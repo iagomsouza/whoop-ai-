@@ -36,7 +36,7 @@ function loadSystemPrompt(): string {
   }
 }
 
-// Function to load and format user data (last 14 days)
+// Interface for WHOOP daily metrics
 interface WhoopMetric {
   date: string; // YYYY-MM-DD
   hrv_ms: number;
@@ -46,7 +46,37 @@ interface WhoopMetric {
   sleep_duration_hours: number;
 }
 
-function loadAndFormatUserData(): string {
+// Interface for Persona Profile
+interface PersonaProfile {
+  userName: string;
+  goals: string[];
+  baselines: Record<string, any>; // Simplified for brevity
+  lifestyle_cues: string[];
+}
+
+// Function to load current day's metrics
+function loadCurrentMetrics(): WhoopMetric | null {
+  try {
+    const dataPath = path.join(__dirname, 'data', 'synthetic_user_data.json');
+    console.log(`[CHAT_FN] Attempting to load user data for current metrics from: ${dataPath}`);
+    const rawData = fs.readFileSync(dataPath, 'utf-8');
+    const jsonData = JSON.parse(rawData) as WhoopMetric[];
+    // Sort by date descending to get the latest entry
+    const sortedData = jsonData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    if (sortedData.length > 0) {
+      console.log('[CHAT_FN] Current metrics loaded successfully.');
+      return sortedData[0];
+    }
+    console.warn('[CHAT_FN] No user data found for current metrics.');
+    return null;
+  } catch (error) {
+    console.error('[CHAT_FN] Error loading current metrics:', error);
+    return null;
+  }
+}
+
+// Function to load recent trends (last 14 days summary string)
+function loadRecentTrends(): string {
   try {
     const dataPath = path.join(__dirname, 'data', 'synthetic_user_data.json');
     console.log(`[CHAT_FN] Attempting to load user data from: ${dataPath}`);
@@ -62,15 +92,30 @@ function loadAndFormatUserData(): string {
     recentData.forEach(day => {
       formattedString += `Date: ${day.date}, HRV: ${day.hrv_ms}ms, Recovery: ${day.recovery_score_percent}%, RHR: ${day.resting_heart_rate_bpm}bpm, Sleep Perf: ${day.sleep_performance_percent}%, Sleep Dur: ${day.sleep_duration_hours}h\n`;
     });
-    console.log('[CHAT_FN] User data formatted.');
+    console.log('[CHAT_FN] Recent trends data formatted.');
     return formattedString;
   } catch (error) {
-    console.error('[CHAT_FN] Error loading or formatting user data:', error);
-    return 'No user data available.'; // Fallback data string
+    console.error('[CHAT_FN] Error loading or formatting recent trends:', error);
+    return 'No recent trends data available.'; // Fallback data string
   }
 }
 
 const router = express.Router();
+
+// Function to load persona profile
+function loadPersonaProfile(): PersonaProfile | null {
+  try {
+    const profilePath = path.join(__dirname, 'data', 'persona_profile.json');
+    console.log(`[CHAT_FN] Attempting to load persona profile from: ${profilePath}`);
+    const rawData = fs.readFileSync(profilePath, 'utf-8');
+    const profileData = JSON.parse(rawData) as PersonaProfile;
+    console.log('[CHAT_FN] Persona profile loaded successfully.');
+    return profileData;
+  } catch (error) {
+    console.error('[CHAT_FN] Error loading persona profile:', error);
+    return null;
+  }
+}
 
 router.post('/api/chat', async (req: Request, res: Response) => {
   console.log('[CHAT_FN] POST /api/chat received.');
@@ -87,13 +132,28 @@ router.post('/api/chat', async (req: Request, res: Response) => {
   }
 
   try {
-    const systemPrompt = loadSystemPrompt();
-    const formattedUserData = loadAndFormatUserData();
+    const systemPromptContent = loadSystemPrompt();
+    const currentMetrics = loadCurrentMetrics();
+    const recentTrends = loadRecentTrends();
+    const personaProfile = loadPersonaProfile();
+    const currentDate = new Date().toISOString().split('T')[0]; // For {{date}} if AI uses it from context
+
+    let contextForAI = `Today's Date: ${currentDate}\n\n`;
+
+    contextForAI += "## Current Metrics (Today's Snapshot):\n";
+    contextForAI += currentMetrics ? JSON.stringify(currentMetrics, null, 2) : "No current metrics available.\n";
+    contextForAI += "\n\n## Recent Trends (Summary of last 14 days):\n";
+    contextForAI += recentTrends;
+    contextForAI += "\n\n## My Persona Profile (Goals, Baselines, Lifestyle):\n";
+    contextForAI += personaProfile ? JSON.stringify(personaProfile, null, 2) : "No persona profile available.\n";
 
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: `Context: Here is my recent WHOOP data to help you personalize your response:\n${formattedUserData}` },
-      { role: 'user', content: userMessageText },
+      { role: 'system', content: systemPromptContent },
+      { 
+        role: 'user', 
+        content: `Here is the information to help you personalize your response as my WHOOP Coach. Please use this data to inform your insights, referring to the sections (Current Metrics, Recent Trends, Persona Profile) as needed:\n\n${contextForAI}`
+      },
+      { role: 'user', content: userMessageText }, // The actual user question
     ];
 
     console.log('[CHAT_FN] Sending request to OpenAI...');

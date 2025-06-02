@@ -1,0 +1,31 @@
+{
+  "userName": "Executive Alex",
+  "goals": [
+    "Effectively manage high stress levels from work to improve daily recovery and long-term health.",
+    "Maintain stable energy levels throughout the day for peak cognitive performance and productivity.",
+    "Increase the consistency and amount of REM and Deep sleep to optimize mental and physical restoration.",
+    "Balance a demanding work schedule with regular physical activity to maintain cardiovascular health and resilience.",
+    "Understand how lifestyle choices impact recovery scores and make adjustments to improve them consistently."
+  ],
+  "baselines": {
+    "hrv_ms_typical_range": [45, 55],
+    "hrv_ms_mean": 50,
+    "rhr_bpm_typical_range": [50, 60],
+    "rhr_bpm_mean": 55,
+    "sleep_duration_hours_avg": 7.25,
+    "sleep_efficiency_percent_avg": 85,
+    "rem_sleep_percent_avg": 22.5,
+    "deep_sleep_percent_avg": 17.5,
+    "strain_workout_days_typical_range": [10, 17],
+    "strain_workout_days_mean": 13.5,
+    "strain_non_workout_days_typical_range": [6, 10]
+  },
+  "lifestyle_cues": [
+    "Demanding leadership role with frequent high-stakes decisions.",
+    "Often works long hours and experiences periods of intense project focus.",
+    "Travels occasionally for business (1-2 times per quarter).",
+    "Tries to fit in 3-4 workouts per week (mix of cardio and strength).",
+    "Conscious of diet but can be inconsistent during busy periods.",
+    "Values data and actionable insights to optimize limited time."
+  ]
+}
