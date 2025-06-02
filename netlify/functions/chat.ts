@@ -25,7 +25,7 @@ app.use(express.json());
 // Function to load system prompt
 function loadSystemPrompt(): string {
   try {
-    const promptPath = path.join(__dirname, 'prompts', 'system_prompt_whoop_coach.md');
+    const promptPath = path.join(__dirname, '../prompts', 'system_prompt_whoop_coach.md');
     console.log(`[CHAT_FN] Attempting to load system prompt from: ${promptPath}`);
     const prompt = fs.readFileSync(promptPath, 'utf-8');
     console.log('[CHAT_FN] System prompt loaded successfully.');
@@ -57,7 +57,7 @@ interface PersonaProfile {
 // Function to load current day's metrics
 function loadCurrentMetrics(): WhoopMetric | null {
   try {
-    const dataPath = path.join(__dirname, 'data', 'synthetic_user_data.json');
+    const dataPath = path.join(__dirname, '../data', 'synthetic_user_data.json');
     console.log(`[CHAT_FN] Attempting to load user data for current metrics from: ${dataPath}`);
     const rawData = fs.readFileSync(dataPath, 'utf-8');
     const jsonData = JSON.parse(rawData) as WhoopMetric[];
@@ -113,7 +113,7 @@ const formatSleepDecimalToHoursMinutes = (decimalHours: number): string => {
 // Function to load persona profile
 function loadPersonaProfile(): PersonaProfile | null {
   try {
-    const profilePath = path.join(__dirname, 'data', 'persona_profile.json');
+    const profilePath = path.join(__dirname, '../data', 'persona_profile.json');
     console.log(`[CHAT_FN] Attempting to load persona profile from: ${profilePath}`);
     const rawData = fs.readFileSync(profilePath, 'utf-8');
     const profileData = JSON.parse(rawData) as PersonaProfile;

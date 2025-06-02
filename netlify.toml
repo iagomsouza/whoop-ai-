@@ -3,7 +3,7 @@
 [build]
   # This is the directory where your serverless functions are located.
   # Netlify will automatically detect and build functions from this directory.
-  functions = "netlify/functions/"
+  functions = "netlify/functions/dist/"
 
   # If your frontend is built by Netlify (which it is), 
   # the publish directory is usually 'dist' for Vite projects.
